@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schulkasse - Verkaufsverwaltung</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1><i class="fas fa-cash-register"></i> Schulkasse</h1>
+            <div class="header-actions">
+                <button id="settingsBtn" class="btn btn-secondary">
+                    <i class="fas fa-cog"></i> Einstellungen
+                </button>
+                <button id="statsBtn" class="btn btn-secondary">
+                    <i class="fas fa-chart-bar"></i> Statistiken
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Categories Section -->
+        <section class="categories-section">
+            <div class="categories-container" id="categoriesContainer">
+                <!-- Categories will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Cart Section -->
+        <aside class="cart-section">
+            <div class="cart-header">
+                <h2><i class="fas fa-shopping-cart"></i></h2>
+                <button id="clearCartBtn" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Löschen
+                </button>
+            </div>
+            
+            <div class="cart-items" id="cartItems">
+                <!-- Cart items will be displayed here -->
+            </div>
+            
+            <div class="cart-summary">
+                <div class="total">
+                    <span>Gesamtpreis:</span>
+                    <span id="totalPrice">0,00 €</span>
+                </div>
+                <button id="checkoutBtn" class="btn btn-primary btn-large">
+                    <i class="fas fa-check"></i> Kauf abschließen
+                </button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Einstellungen</h2>
+                <button class="close-btn" id="closeSettingsBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-tabs">
+                    <button class="tab-btn active" data-tab="categories">Kategorien</button>
+                    <button class="tab-btn" data-tab="products">Produkte</button>
+                    <button class="tab-btn" data-tab="general">Allgemein</button>
+                </div>
+                
+                <div class="tab-content active" id="categoriesTab">
+                    <div class="section-header">
+                        <h3>Kategorien verwalten</h3>
+                        <button id="addCategoryBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Neue Kategorie
+                        </button>
+                    </div>
+                    <div id="categoriesList" class="settings-list">
+                        <!-- Categories will be listed here -->
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="productsTab">
+                    <div class="section-header">
+                        <h3>Produkte verwalten</h3>
+                        <button id="addProductBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Neues Produkt
+                        </button>
+                    </div>
+                    <div id="productsList" class="settings-list">
+                        <!-- Products will be listed here -->
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="generalTab">
+                    <div class="section-header">
+                        <h3>Allgemeine Einstellungen</h3>
+                    </div>
+                    <div class="setting-item">
+                        <label for="schoolName">Schulname:</label>
+                        <input type="text" id="schoolName" placeholder="Name der Schule">
+                    </div>
+                    <div class="setting-item">
+                        <label for="currency">Währung:</label>
+                        <select id="currency">
+                            <option value="€">Euro (€)</option>
+                            <option value="$">Dollar ($)</option>
+                            <option value="CHF">Schweizer Franken (CHF)</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="taxRate">Steuersatz (%):</label>
+                        <input type="number" id="taxRate" min="0" max="100" step="0.1" value="0">
+                    </div>
+                    <div class="setting-item">
+                        <label for="printReceipt">Beleg drucken:</label>
+                        <input type="checkbox" id="printReceipt">
+                        <span style="margin-left: 0.5rem; font-size: 0.9rem; color: #718096;">Automatisch Beleg beim Kauf abschließen drucken</span>
+                    </div>
+                </div>
+                
+                <div class="section-header">
+                    <h3>Datenverwaltung</h3>
+                </div>
+                <div class="danger-zone">
+                    <div class="danger-zone-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Gefahrenbereich</span>
+                    </div>
+                    <div class="danger-zone-content">
+                        <p>Diese Aktionen können nicht rückgängig gemacht werden!</p>
+                        <div class="danger-actions">
+                            <button id="resetDataBtn" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Alle Daten zurücksetzen
+                            </button>
+                            <button id="exportDataBtn" class="btn btn-secondary">
+                                <i class="fas fa-download"></i> Daten exportieren
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-folder-plus"></i> Neue Kategorie</h2>
+                <button class="close-btn" id="closeAddCategoryBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="categoryName">Kategoriename:</label>
+                    <input type="text" id="categoryName" placeholder="z.B. Gebäck, Getränke">
+                </div>
+                <div class="form-group">
+                    <label for="categoryColor">Farbe:</label>
+                    <input type="color" id="categoryColor" value="#4CAF50">
+                </div>
+                <div class="form-group">
+                    <label for="categoryCosts">Anschaffungskosten (${this.settings.currency}):</label>
+                    <input type="number" id="categoryCosts" min="0" step="0.01" placeholder="0.00">
+                    <small style="color: #718096; display: block; margin-top: 0.25rem;">
+                        Gesamtkosten für alle Produkte dieser Kategorie
+                    </small>
+                </div>
+                <div class="form-actions">
+                    <button id="saveCategoryBtn" class="btn btn-primary">Speichern</button>
+                    <button id="cancelCategoryBtn" class="btn btn-secondary">Abbrechen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus"></i> Neues Produkt</h2>
+                <button class="close-btn" id="closeAddProductBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="productName">Produktname:</label>
+                    <input type="text" id="productName" placeholder="z.B. Kuchen, Cola">
+                </div>
+                <div class="form-group">
+                    <label for="productCategory">Kategorie:</label>
+                    <select id="productCategory">
+                        <!-- Categories will be loaded here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Preis:</label>
+                    <input type="number" id="productPrice" min="0" step="0.01" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="productStock">Verfügbare Menge:</label>
+                    <input type="number" id="productStock" min="0" value="999">
+                </div>
+                <div class="form-actions">
+                    <button id="saveProductBtn" class="btn btn-primary">Speichern</button>
+                    <button id="cancelProductBtn" class="btn btn-secondary">Abbrechen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-chart-bar"></i> Verkaufsstatistiken</h2>
+                <button class="close-btn" id="closeStatsBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Heute</h3>
+                        <div class="stat-value" id="todaySales">0,00 €</div>
+                        <div class="stat-label">Umsatz</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Verkäufe</h3>
+                        <div class="stat-value" id="todayTransactions">0</div>
+                        <div class="stat-label">Anzahl</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Beliebtestes</h3>
+                        <div class="stat-value" id="topProduct">-</div>
+                        <div class="stat-label">Produkt</div>
+                    </div>
+                </div>
+                <div class="stats-chart">
+                    <h3>Verkäufe nach Kategorien</h3>
+                    <div id="categoryChart" class="chart-container">
+                        <!-- Chart will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div id="notification" class="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
