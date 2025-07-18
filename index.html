@@ -36,13 +36,6 @@
 
         <!-- Cart Section -->
         <aside class="cart-section">
-            <div class="cart-header">
-                <h2><i class="fas fa-shopping-cart"></i></h2>
-                <button id="clearCartBtn" class="btn btn-danger">
-                    <i class="fas fa-trash"></i> Löschen
-                </button>
-            </div>
-            
             <div class="cart-items" id="cartItems">
                 <!-- Cart items will be displayed here -->
             </div>
@@ -52,9 +45,14 @@
                     <span>Gesamtpreis:</span>
                     <span id="totalPrice">0,00 €</span>
                 </div>
-                <button id="checkoutBtn" class="btn btn-primary btn-large">
-                    <i class="fas fa-check"></i> Kauf abschließen
-                </button>
+                <div class="cart-actions">
+                    <button id="clearCartBtn" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Löschen
+                    </button>
+                    <button id="checkoutBtn" class="btn btn-primary btn-large">
+                        <i class="fas fa-check"></i> Kauf abschließen
+                    </button>
+                </div>
             </div>
         </aside>
     </main>
@@ -102,10 +100,6 @@
                         <h3>Allgemeine Einstellungen</h3>
                     </div>
                     <div class="setting-item">
-                        <label for="schoolName">Schulname:</label>
-                        <input type="text" id="schoolName" placeholder="Name der Schule">
-                    </div>
-                    <div class="setting-item">
                         <label for="currency">Währung:</label>
                         <select id="currency">
                             <option value="€">Euro (€)</option>
@@ -122,25 +116,29 @@
                         <input type="checkbox" id="printReceipt">
                         <span style="margin-left: 0.5rem; font-size: 0.9rem; color: #718096;">Automatisch Beleg beim Kauf abschließen drucken</span>
                     </div>
-                </div>
-                
-                <div class="section-header">
-                    <h3>Datenverwaltung</h3>
-                </div>
-                <div class="danger-zone">
-                    <div class="danger-zone-header">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>Gefahrenbereich</span>
+                    <div class="setting-item">
+                        <label for="schoolName">Schulname:</label>
+                        <input type="text" id="schoolName" placeholder="Name der Schule">
                     </div>
-                    <div class="danger-zone-content">
-                        <p>Diese Aktionen können nicht rückgängig gemacht werden!</p>
-                        <div class="danger-actions">
-                            <button id="resetDataBtn" class="btn btn-danger">
-                                <i class="fas fa-trash"></i> Alle Daten zurücksetzen
-                            </button>
-                            <button id="exportDataBtn" class="btn btn-secondary">
-                                <i class="fas fa-download"></i> Daten exportieren
-                            </button>
+                    
+                    <div class="section-header">
+                        <h3>Datenverwaltung</h3>
+                    </div>
+                    <div class="danger-zone">
+                        <div class="danger-zone-header">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Gefahrenbereich</span>
+                        </div>
+                        <div class="danger-zone-content">
+                            <p>Diese Aktionen können nicht rückgängig gemacht werden!</p>
+                            <div class="danger-actions">
+                                <button id="resetDataBtn" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Alle Daten zurücksetzen
+                                </button>
+                                <button id="exportDataBtn" class="btn btn-secondary">
+                                    <i class="fas fa-download"></i> Daten exportieren
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -251,6 +249,29 @@
     <!-- Success Notification -->
     <div id="notification" class="notification">
         <span id="notificationText"></span>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Bestätigung erforderlich</h2>
+                <button class="close-btn" id="closeConfirmationBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-content">
+                    <p id="confirmationMessage"></p>
+                </div>
+                <div class="form-actions">
+                    <button id="confirmYesBtn" class="btn btn-danger">
+                        <i class="fas fa-check"></i> Ja, bestätigen
+                    </button>
+                    <button id="confirmNoBtn" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Abbrechen
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

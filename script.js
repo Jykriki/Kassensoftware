@@ -14,6 +14,7 @@ class Schulkasse {
         this.categoryChart = null;
         this.editingCategoryId = null;
         this.editingProductId = null;
+        this.pendingConfirmation = null;
         
         this.init();
     }
@@ -123,6 +124,11 @@ class Schulkasse {
         // Reset and export buttons
         document.getElementById('resetDataBtn').addEventListener('click', () => this.resetAllData());
         document.getElementById('exportDataBtn').addEventListener('click', () => this.exportData());
+
+        // Confirmation modal buttons
+        document.getElementById('closeConfirmationBtn').addEventListener('click', () => this.closeModal('confirmationModal'));
+        document.getElementById('confirmYesBtn').addEventListener('click', () => this.executeConfirmation());
+        document.getElementById('confirmNoBtn').addEventListener('click', () => this.closeModal('confirmationModal'));
     }
 
     // Modal Management
@@ -202,7 +208,6 @@ class Schulkasse {
                         <div class="empty-state">
                             <i class="fas fa-box-open"></i>
                             <h3>Keine Produkte</h3>
-                            <p>Fügen Sie Produkte zu dieser Kategorie hinzu.</p>
                         </div>
                     </div>
                 </div>
@@ -255,14 +260,14 @@ class Schulkasse {
     }
 
     deleteCategory(categoryId) {
-        if (confirm('Sind Sie sicher, dass Sie diese Kategorie löschen möchten? Alle zugehörigen Produkte werden ebenfalls gelöscht.')) {
-                    this.categories = this.categories.filter(c => c.id !== categoryId);
-        this.products = this.products.filter(p => p.categoryId !== categoryId);
-        this.saveData();
-        this.renderCategories();
-        this.renderSettingsLists(); // Update settings lists immediately
-        this.showNotification('Kategorie erfolgreich gelöscht!');
-        }
+        this.showConfirmation('Sind Sie sicher, dass Sie diese Kategorie löschen möchten? Alle zugehörigen Produkte werden ebenfalls gelöscht.', () => {
+            this.categories = this.categories.filter(c => c.id !== categoryId);
+            this.products = this.products.filter(p => p.categoryId !== categoryId);
+            this.saveData();
+            this.renderCategories();
+            this.renderSettingsLists(); // Update settings lists immediately
+            this.showNotification('Kategorie erfolgreich gelöscht!');
+        });
     }
 
     // Products Management
@@ -359,13 +364,13 @@ class Schulkasse {
     }
 
     deleteProduct(productId) {
-        if (confirm('Sind Sie sicher, dass Sie dieses Produkt löschen möchten?')) {
-                    this.products = this.products.filter(p => p.id !== productId);
-        this.saveData();
-        this.renderCategories();
-        this.renderSettingsLists(); // Update settings lists immediately
-        this.showNotification('Produkt erfolgreich gelöscht!');
-        }
+        this.showConfirmation('Sind Sie sicher, dass Sie dieses Produkt löschen möchten?', () => {
+            this.products = this.products.filter(p => p.id !== productId);
+            this.saveData();
+            this.renderCategories();
+            this.renderSettingsLists(); // Update settings lists immediately
+            this.showNotification('Produkt erfolgreich gelöscht!');
+        });
     }
 
     // Cart Management
@@ -464,11 +469,11 @@ class Schulkasse {
     clearCart() {
         if (this.cart.length === 0) return;
         
-        if (confirm('Sind Sie sicher, dass Sie den Warenkorb leeren möchten?')) {
+        this.showConfirmation('Sind Sie sicher, dass Sie den Warenkorb leeren möchten?', () => {
             this.cart = [];
             this.updateCart();
             this.showNotification('Warenkorb geleert!');
-        }
+        });
     }
 
     checkout() {
@@ -774,6 +779,20 @@ class Schulkasse {
         }, 3000);
     }
 
+    showConfirmation(message, callback) {
+        this.pendingConfirmation = callback;
+        document.getElementById('confirmationMessage').textContent = message;
+        this.openModal('confirmationModal');
+    }
+
+    executeConfirmation() {
+        if (this.pendingConfirmation) {
+            this.pendingConfirmation();
+            this.pendingConfirmation = null;
+        }
+        this.closeModal('confirmationModal');
+    }
+
     // Save functions (called from event listeners)
     saveCategory() {
         this.addCategory();
@@ -924,7 +943,7 @@ Dies wird löschen:
 
 Diese Aktion kann NICHT rückgängig gemacht werden!`;
 
-        if (confirm(confirmMessage)) {
+        this.showConfirmation(confirmMessage, () => {
             // Clear all data
             this.categories = [];
             this.products = [];
@@ -952,7 +971,7 @@ Diese Aktion kann NICHT rückgängig gemacht werden!`;
             this.closeModal('settingsModal');
 
             this.showNotification('Alle Daten wurden erfolgreich zurückgesetzt!', 'success');
-        }
+        });
     }
 
     exportData() {
